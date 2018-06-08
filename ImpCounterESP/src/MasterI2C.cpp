@@ -34,8 +34,7 @@ bool MasterI2C::sendCmd(const char cmd ) {
 }
 
 bool MasterI2C::setup_mode() {
-	pinMode(D6, INPUT_PULLUP);
-	return digitalRead(D6) == LOW; //mode == SETUP_MODE;
+	return mode == SETUP_MODE;
 }
 
 bool MasterI2C::getByte(uint8_t &value) {
@@ -47,14 +46,23 @@ bool MasterI2C::getByte(uint8_t &value) {
 	return true;
 }
 
-bool MasterI2C::getUint(uint16_t &value) 
+
+bool MasterI2C::getUint(uint32_t &value) 
 {
-	uint8_t i1, i2;
-	if (!getByte(i1) || !getByte(i2)) {
-		return false;
+	uint8_t i1, i2, i3, i4;
+	if (getByte(i1) && getByte(i2) && getByte(i3) && getByte(i4)) {
+		value = i4;
+		value = value << 8;
+		value |= i3;
+		value = value << 8;
+		value |= i2;
+		value = value << 8;
+		value |= i1;
+		//вот так не работает из-за преобразования типов:
+		//value = i1 | (i2 << 8) | (i3 << 16) | (i4 << 24);
+		return true;
 	}
-	value = i1 | (i2 << 8);
-	return true;
+	return false;
 }
 
 bool MasterI2C::getSlaveData(SlaveData &data)

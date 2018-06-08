@@ -13,7 +13,7 @@
 
 WiFiClient client;
 
-void MyWifi::setup(Settings &sett) 
+void MyWifi::setup(Settings &sett, SlaveData &data) 
 {
 	// Пользователь нажал кнопку - запускаем веб сервер
 	LOG_NOTICE( "ESP", "I2C-begined: mode SETUP" );
@@ -33,13 +33,13 @@ void MyWifi::setup(Settings &sett)
 	WiFiManagerParameter param_hostname( "Host", "Host",  sett.hostname, HOSTNAME_LEN );
 	wifiManager.addParameter( &param_hostname );
 
-	WiFiManagerParameter param_litres0_start( "Litres0", "Litres0",  String(sett.litres0_start).c_str(), 7 );
-	wifiManager.addParameter( &param_litres0_start );
-	WiFiManagerParameter param_litres1_start( "Litres1", "Litres1",  String(sett.litres1_start).c_str(), 7 );
-	wifiManager.addParameter( &param_litres1_start );
+	//WiFiManagerParameter param_litres0_start( "Litres0", "Litres0",  String(sett.litres0_start).c_str(), 7 );
+	//wifiManager.addParameter( &param_litres0_start );
+	//WiFiManagerParameter param_litres1_start( "Litres1", "Litres1",  String(sett.litres1_start).c_str(), 7 );
+	//wifiManager.addParameter( &param_litres1_start );
 
-	WiFiManagerParameter param_litres_per_imp( "Litres", "Litres_impuls",  String(sett.liters_per_impuls).c_str(), 5 );
-	wifiManager.addParameter( &param_litres_per_imp );
+	//WiFiManagerParameter param_litres_per_imp( "Litres", "Litres_impuls",  String(sett.liters_per_impuls).c_str(), 5 );
+	//wifiManager.addParameter( &param_litres_per_imp );
 
 	// Start the portal with the SSID 
 	wifiManager.startConfigPortal( AP_NAME );
@@ -57,11 +57,14 @@ void MyWifi::setup(Settings &sett)
 	strncpy(sett.key, param_key.getValue(), KEY_LEN);
 	strncpy(sett.hostname, param_hostname.getValue(), HOSTNAME_LEN);
 
-	sett.litres0_start = String(param_litres0_start.getValue()).toFloat();
-	sett.litres1_start = String(param_litres1_start.getValue()).toFloat();
-	sett.liters_per_impuls = String(param_litres_per_imp.getValue()).toInt();
+	//sett.litres0_start = String(param_litres0_start.getValue()).toFloat();
+	//sett.litres1_start = String(param_litres1_start.getValue()).toFloat();
+	//sett.liters_per_impuls = String(param_litres_per_imp.getValue()).toInt();
 
-	sett.crc = 1234;
+	sett.impules0_start = data.value0;
+	sett.impules1_start = data.value1;
+	
+	sett.crc = 1235;
 	storeConfig(sett);
 }
 
@@ -146,7 +149,7 @@ bool loadConfig(struct Settings &sett)
 
 	EEPROM.get(0, sett);
 
-	if (sett.crc == 1234) 
+	if (sett.crc == 1235) 
 	{
 		IPAddress ip(sett.ip);
 		IPAddress subnet(sett.subnet);

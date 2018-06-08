@@ -11,18 +11,6 @@ MyWifi myWifi;
 SlaveData data;
 Settings sett;
 
-void setup() {
-	LOG_BEGIN(115200);
-	while (!Serial) 
-		;
-
-	LOG_NOTICE( "ESP", "Booted" );
-
-	ESP.wdtDisable();
-	
-	masterI2C.begin();
-}
-
 void Calculate_litres(Settings &sett, SlaveData &data) {
 
 	sett.value0 = sett.litres0_start + (data.value0 - sett.impules0_start)*sett.liters_per_impuls/1000.0;
@@ -31,16 +19,28 @@ void Calculate_litres(Settings &sett, SlaveData &data) {
 	storeConfig(sett);
 }
 
+
+void setup() {
+	LOG_BEGIN(115200);
+	
+	LOG_NOTICE( "ESP", "Booted" );
+
+	ESP.wdtDisable();
+	
+	masterI2C.begin();
+}
+
 void loop() {
+
+	data.diagnostic = masterI2C.getSlaveData(data);
 
 	if (masterI2C.setup_mode()) {
 		loadConfig(sett);
-		myWifi.setup(sett);
+		myWifi.setup(sett, data);
 	}
 	else {
 		if (loadConfig(sett)) {
 			
-			data.diagnostic = masterI2C.getSlaveData(data);
 			Calculate_litres(sett, data);
 
 			Blynk.begin(sett.key, WiFi.SSID().c_str(), WiFi.psk().c_str());

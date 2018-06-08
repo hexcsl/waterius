@@ -4,7 +4,7 @@
 
 // #define LOG_LEVEL_ERROR
 // #define LOG_LEVEL_INFO
-// #define LOG_LEVEL_DEBUG
+#define LOG_LEVEL_DEBUG
 
 #include "Setup.h"
 
@@ -150,11 +150,11 @@ void loop()
 	
 	DEBUG_CONNECT(9600);
 
-	wake_every = WAKE_EVERY_MIN;
 	// Пользователь нажал кнопку SETUP
 	if (esp.pressed)
 	{
-		wake_every = 1;
+		LOG_DEBUG(F("BUTTON pressed"));
+		wake_every = 2;
 
 		while(esp.is_pressed())
 				;  //ждем когда пользователь отпустит кнопку т.к. иначе ESP запустится в режиме программирования
@@ -164,18 +164,19 @@ void loop()
 		esp.power(true);
 		LOG_DEBUG(F("ESP turn on"));
 		
-		while (!slaveI2C.masterGoingToSleep() && esp.elapsed(SETUP_TIME_MSEC)) {
+		while (!slaveI2C.masterGoingToSleep() && !esp.elapsed(SETUP_TIME_MSEC)) {
 			delayMicroseconds(65000);
 		}
-
 	}
 	else {
+		LOG_DEBUG(F("Wake up for send"));
+		wake_every = WAKE_EVERY_MIN;
 		// Передаем показания
 		slaveI2C.begin(TRANSMIT_MODE);
 		esp.power(true);
+		LOG_DEBUG(F("ESP turn on"));
 
-		while (!slaveI2C.masterGoingToSleep() 
-			&& !esp.elapsed(WAIT_ESP_MSEC)) { 
+		while (!slaveI2C.masterGoingToSleep() && !esp.elapsed(WAIT_ESP_MSEC)) { 
 			; //передаем данные в ESP
 		}
 

@@ -5,6 +5,7 @@
 
 #include <Arduino.h>
 #include <WiFiClient.h>
+#include "MasterI2C.h"
 
 #define KEY_LEN 34
 #define HOSTNAME_LEN 32
@@ -47,7 +48,7 @@ protected:
 public:
 	bool begin(const uint8_t mode);
 	bool send(const Settings &sett, const void * data, uint16_t length);
-	void setup(Settings &sett);
+	void setup(Settings &sett, SlaveData &data);
 	bool connect(const Settings &sett);
 };
 
