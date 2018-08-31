@@ -9,7 +9,7 @@
 #include "sender_blynk.h"
 #include "sender_tcp.h"
 
-MasterI2C masterI2C; // Для общения с Attiny85 по i2c
+MasterI2C masterI2C; // Для общения с Attiny85 по i2c  TEST
 
 SlaveData data; // Данные от Attiny85
 Settings sett;  // Настройки соединения и предыдущие показания из EEPROM
